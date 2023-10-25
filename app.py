@@ -17,16 +17,12 @@ def map():
     token = config['TOKEN']  # Get the token from the config
 
     # Construct the API URL with dynamic latitude and longitude
-    dynamic_url = f"{config['PREDICT_URL']}latitude={latitude}&longitude={longitude}$token={token}"
+    dynamic_url = f"{config['PREDICT_URL']}latitude={latitude}&longitude={longitude}&token={token}"  # Added a '?' to the URL
 
-    # Include the token in the request headers
-    headers = {
-        'Authorization': f'Bearer {token}'
-    }
-
-    # Make a request to the AirQo API with the token
-    response = requests.get(dynamic_url, headers=headers)
-
+    # You need to send a request to the API using the dynamic_url
+    response = requests.get(dynamic_url)
+ 
+    # Check if the request was successful (status_code 200)
     if response.status_code == 200:
         data = response.json().get("data")
         if data:
