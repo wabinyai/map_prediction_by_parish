@@ -1,7 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        /* Style for the two columns */
+        .column {
+            float: left;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Style for the map column */
+        #map-column {
+            background-color: #f2f2f2;
+        }
+
+        /* Style for the information column */
+        #info-column {
+            padding: 20px;
+        }
+    </style>
+
+    <!-- Include Leaflet.js library and CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
     <script>
+        // Function to initialize the map
+        function initMap(latitude, longitude, pm25) {
+            var map = L.map('map').setView([latitude, longitude], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add a marker with a PM2.5 value as a tooltip
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup('PM2.5: ' + pm25)
+                .openPopup();
+        }
+
         // Function to convert GMT timestamp to local time
         function convertGMTToLocalTime(gmtTimestamp) {
             var localTimestamp = new Date(gmtTimestamp);
@@ -11,15 +54,27 @@
 </head>
 <body>
     <h1>PM2.5 Map</h1>
-    {% if district %} 
-    <p>District: {{ district }}</p>
-    <p>Parish: {{ parish }}</p>
-    <p>PM2.5 Value: {{ pm25 }}</p>
-    <p>Timestamp (GMT): {{ timestamp }}</p>
-    <!-- Display local time by calling the JavaScript function -->
-    <p>Timestamp (Local): <script>document.write(convertGMTToLocalTime('{{ timestamp }}'));</script></p>
-    {% else %}
-    <p>No data available for the specified latitude and longitude.</p>
-    {% endif %}
+    <div class="row">
+        <div class="column" id="map-column">
+            <!-- Add an empty div for the map to be inserted into -->
+            <div id="map" style="height: 400px;"></div>
+        </div>
+        <div class="column" id="info-column">
+            {% if district %} 
+            <p>District: {{ district }}</p>
+            <p>Parish: {{ parish }}</p>
+            <p>PM2.5 Value: {{ pm25 }}</p>
+            <p>Timestamp (GMT): {{ timestamp }}</p>
+            <!-- Display local time by calling the JavaScript function -->
+            <p>Timestamp (Local): <script>document.write(convertGMTToLocalTime('{{ timestamp }}'));</script></p>
+            {% else %}
+            <p>No data available for the specified latitude and longitude.</p>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Call the initMap function with latitude, longitude, and PM2.5 value -->
+    <script>
+        initMap({{ latitude }}, {{ longitude }}, {{ pm25 }});
+    </script>
 </body>
 </html>
