@@ -7,5 +7,4 @@ kafka-python
 pymongo
 python-dotenv
 flask
-#dotenv
 os
