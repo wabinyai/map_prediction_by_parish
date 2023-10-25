@@ -27,4 +27,16 @@
 * This is a CRON job only thus it does not require any ports to be exposed.
 
 
+## 
+The .env file
 
+
+### 1. Create a .env file
+
+
+### 2. Add the API key
+In the .env file the API used 
+https://platform.airqo.net/api/v2/predict/search?latitude={}&longitude={}&token{}
+
+
+Get the token from platform.airqo.net >> setting
