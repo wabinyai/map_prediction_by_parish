@@ -39,4 +39,4 @@ In the .env file the API used
 https://platform.airqo.net/api/v2/predict/search?latitude={}&longitude={}&token{}
 
 
-Get the token from platform.airqo.net >> setting
+Get the token from platform.airqo.net >> settings >> Register client >> Generate API key
