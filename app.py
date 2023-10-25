@@ -3,7 +3,6 @@ from configure import load_config
 import requests
 
 app = Flask(__name__)
-
 config = load_config()
 
 @app.route('/')
