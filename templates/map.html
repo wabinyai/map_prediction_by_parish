@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>PM2.5 Map</h1>
+    {% if district %} 
+    <p>District: {{ district }}</p>
+    <p>Parish: {{ parish }}</p>
+    <p>PM2.5 Value: {{ pm25 }}</p>
+    <p>Timestamp: {{ timestamp }}</p>
+    {% else %}
+    <p>No data available for the specified latitude and longitude.</p>
+    {% endif %}
+</body>
+</html>
