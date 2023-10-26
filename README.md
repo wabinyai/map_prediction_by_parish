@@ -13,8 +13,9 @@
 ```pip install -r requirements.txt```
 
 ### Running flask
+```flask run```
+```python app.py```
 
-```python main.py```
 #
 
 ## Running the model with Docker

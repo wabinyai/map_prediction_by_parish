@@ -11,7 +11,7 @@ def index():
 
 @app.route('/map', methods=['POST'])
 def map():
-    # Get latitude and longitude from the form
+    # Get latitude and longitude from the form 
     latitude = request.form['latitude']
     longitude = request.form['longitude']
     token = config['TOKEN']  # Get the token from the config
