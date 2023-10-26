@@ -12,9 +12,10 @@
 ```python.exe -m pip install --upgrade pip```
 ```pip install -r requirements.txt```
 
-### Running the model
+### Running flask
 
 ```python main.py```
+#
 
 ## Running the model with Docker
 ### Build the image
