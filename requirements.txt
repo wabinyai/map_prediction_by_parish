@@ -1,10 +1,4 @@
 pandas
-google-cloud-bigquery
-google-cloud-bigquery[pandas]
-requests
-shapely
-kafka-python
-pymongo
-python-dotenv
 flask
-os
+python-dotenv
+requests
