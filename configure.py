@@ -9,7 +9,7 @@ def load_config():
     # Load environment variables from the .env file
     load_dotenv(dotenv_path)
 
-    # Define a dictionary with default values
+    # Define a dictionary with default values 
     config = {
         "PREDICT_URL": os.getenv("PREDICT_URL", "default_predict_url"),
         "TOKEN": os.getenv("TOKEN", "default_token"),
