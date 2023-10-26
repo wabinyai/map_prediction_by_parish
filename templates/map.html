@@ -55,10 +55,12 @@
 <body>
     <h1>PM2.5 Map</h1>
     <div class="row">
+        <!-- First Column: Map -->
         <div class="column" id="map-column">
             <!-- Add an empty div for the map to be inserted into -->
             <div id="map" style="height: 400px;"></div>
         </div>
+        <!-- Second Column: Information -->
         <div class="column" id="info-column">
             {% if district %} 
             <p>District: {{ district }}</p>
