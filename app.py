@@ -1,42 +1,70 @@
-from flask import Flask, render_template, request
-from configure import load_config
+# Import necessary libraries
+import os
+from flask import Flask, jsonify, render_template, request
 import requests
+import geojson
+from dotenv import load_dotenv
 
+# Create a Flask app
 app = Flask(__name__)
-config = load_config()
+load_dotenv()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+API_URL = "https://platform.airqo.net/api/v2/predict/search"
 
-@app.route('/map', methods=['POST'])
-def map():
-    # Get latitude and longitude from the form 
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
-    token = config['TOKEN']  # Get the token from the config
+# Function to fetch PM2.5 values from the API
+def fetch_pm2_5_data(latitude, longitude, token):
+    # Prepare the API URL with query parameters
+    api_params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "token": token,
+    }
+    try:
+        response = requests.get(API_URL, params=api_params)
+        response.raise_for_status()  # Check for any request errors
+        pm2_5_data = response.json()  # Parse the JSON response
+        return pm2_5_data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching PM2.5 data from the API: {e}")
+        return None
 
-    # Construct the API URL with dynamic latitude and longitude
-    dynamic_url = f"{config['PREDICT_URL']}?latitude={latitude}&longitude={longitude}&token={token}"  # Added a '?' to the URL
+# Route to access geo data from the API
+@app.route("/geo")
+def connect_to_api():
+    try:
+        # Get user's latitude and longitude from query parameters
+        user_latitude = float(request.args.get("latitude"))
+        user_longitude = float(request.args.get("longitude"))
 
-    # You need to send a request to the API using the dynamic_url
-    response = requests.get(dynamic_url)
-    
-    # Check if the request was successful (status_code 200)
-    if response.status_code == 200:
-        data = response.json().get("data")
-        if data:
-            district = data.get("district")
-            parish = data.get("parish")
-            pm25 = data.get("pm2_5")
-            timestamp = data.get("timestamp")
-            
+        # Fetch PM2.5 data from the API
+        pm2_5_data = fetch_pm2_5_data(user_latitude, user_longitude, os.environ.get("AIRQO_API_TOKEN"))
+
+        if pm2_5_data:
+            # Process the retrieved data and create a GeoJSON response
+            features = [
+                geojson.Feature(
+                    id=str(index),
+                    geometry=geojson.Point((user_longitude, user_latitude)),
+                    properties={"pm2_5": pm2_5_value}
+                ) for index, pm2_5_value in enumerate(pm2_5_data)
+            ]
+
+            feature_collection = geojson.FeatureCollection(features)
+            return jsonify(feature_collection)
         else:
-            district, parish, pm25, timestamp = None, None, None, None
-    else:
-        district, parish, pm25, timestamp = None, None, None, None
+            return "Failed to fetch PM2.5 data from the API.", 500
+    except Exception as e:
+        print(f"Error: {e}")
+        return "An error occurred while processing the request.", 500
 
-    return render_template('map.html', district=district, parish=parish, pm25=pm25, timestamp=timestamp)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+# Route to display the map
+@app.route("/")
+def home():
+    return render_template("map.html")
+
+
+# Run the Flask app on port 5000
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
