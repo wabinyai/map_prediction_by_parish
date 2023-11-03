@@ -33,11 +33,29 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // Create a GeoSearch control
 const search = new GeoSearch.GeoSearchControl({
     provider: new GeoSearch.OpenStreetMapProvider(),
+    autoComplete: true,
+    autoCompleteDelay: 100,
     style: 'bar',
+    showMarker: true,
 });
 
 // Add the GeoSearch control to the map
 map.addControl(search);
+
+// function to get search results
+// function searchEventHandler(result) {
+//     console.log(result.location);
+//   }
+function searchEventHandler(result) {
+    const latitude = result.location.lat;
+    const longitude = result.location.lng;
+    // Call a function to fetch PM2.5 data and draw boundaries on the map
+    console.log("here now....")
+    console.log(result.raw)
+    console.log(latitude, longitude)
+    fetchAndRenderMap(latitude, longitude, map);
+}
+  map.on('geosearch/showlocation', searchEventHandler);
 
 // Fetch and render map data from the server based on user's location
 getUserLocation(map, function (latitude, longitude) {
@@ -97,10 +115,19 @@ function fetchAndRenderMap(latitude, longitude, map) {
     fetch(`/geo?latitude=${latitude}&longitude=${longitude}`)
         .then((response) => response.json())
         .then((data) => {
-            loadFeatures(data.features, map);
+            // Data is now a JSON object containing the PM2.5 value
+            var pm2_5 = data.pm2_5;
+
+            // You can use the PM2.5 value as needed
+            console.log("PM2.5 Value:", pm2_5);
+
+            // Optionally, you can update the map or perform other actions based on the PM2.5 value.
+            // For example, you might want to display it on the map or take some action if it exceeds a threshold.
+
         })
         .catch((error) => {
-            console.error("Error fetching map data:", error);
+            console.error("Error fetching PM2.5 data:", error);
         });
 }
+
 
